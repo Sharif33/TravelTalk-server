@@ -33,7 +33,7 @@ async function run() {
             res.send(blogs);
         });
 
-        // Update fvrt
+        // Update myBlogs
         /* app.put('/blogs', async (req, res) => {
             const updated = req.body;
     

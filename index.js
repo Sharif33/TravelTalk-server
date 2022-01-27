@@ -22,12 +22,24 @@ async function run() {
         const blogCollection = database.collection('blogs');
         const usersCollection = database.collection('users');
         const MyBlog = database.collection('usersBlog');
+        const MyCompared = database.collection('userCompare');
         const Reviews = database.collection('reviews');
 
-
+                                    
         // GET blogs
         app.get('/blogs', async (req, res) => {
             const cursor = blogCollection.find({});
+            // const query = { isApproved: true };
+            // const cursor = blogCollection.find(query);
+            // const results = await cursor.toArray();
+            
+            // if(results) {
+            //   res.json(results);
+            // }
+    
+            // else {
+            //   res.send([]);
+            // }
             const page = req.query.page;
             const size = parseInt(req.query.size);
             let blogs;
@@ -137,7 +149,7 @@ async function run() {
                 });
         });
 
-        //DELETE my order
+        //DELETE myblog
         app.delete('/MyBlogs/:id', async (req, res) => {
             const id = req.params.id;
             const query = { _id: ObjectId(id) }
@@ -153,6 +165,42 @@ async function run() {
             console.log(result);
             res.json(result)
         });
+
+        // compare
+        // GET usersCompare 
+        app.get('/userCompare', async (req, res) => {
+            const cursor = MyCompared.find({});
+            const userCompare = await cursor.toArray();
+            res.send(userCompare);
+        });
+
+        // GET all order by email
+        app.get("/MyCompared/:email", (req, res) => {
+            console.log(req.params);
+            MyCompared
+                .find({ email: req.params.email })
+                .toArray((err, results) => {
+                    res.send(results);
+                });
+        });
+
+        //DELETE myblog
+        app.delete('/MyCompared/:id', async (req, res) => {
+            const id = req.params.id;
+            const query = { _id: ObjectId(id) }
+            const result = await MyCompared.deleteOne(query);
+            res.json(result);
+        })
+
+        // POST usersBlog
+        app.post('/userCompare', async (req, res) => {
+            const compare = req.body;
+            console.log('hit the post api', compare);
+            const result = await MyCompared.insertOne(compare);
+            console.log(result);
+            res.json(result)
+        });
+
 
         // DELETE usersBlog from ManageusersBlog
         app.delete('/usersBlog/:id', async (req, res) => {

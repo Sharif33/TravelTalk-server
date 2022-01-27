@@ -25,21 +25,26 @@ async function run() {
         const MyCompared = database.collection('userCompare');
         const Reviews = database.collection('reviews');
 
+            // get all blogs
+        app.get('/allBlogs', async (req, res) => {
+            const query = {};
+            const cursor = blogCollection.find(query);
+    
+            const results = await cursor.toArray();
+            
+            if(results) {
+              res.json(results);
+            }
+            else {
+              res.send([]);
+            }
+    
+          });
                                     
         // GET blogs
         app.get('/blogs', async (req, res) => {
-            const cursor = blogCollection.find({});
-            // const query = { isApproved: true };
-            // const cursor = blogCollection.find(query);
-            // const results = await cursor.toArray();
-            
-            // if(results) {
-            //   res.json(results);
-            // }
-    
-            // else {
-            //   res.send([]);
-            // }
+            const query = { isApproved: true };
+            const cursor = blogCollection.find(query);
             const page = req.query.page;
             const size = parseInt(req.query.size);
             let blogs;
@@ -56,28 +61,28 @@ async function run() {
             });
         });
 
-        // Update myBlogs
-        /* app.put('/blogs', async (req, res) => {
+        // Update Blogs
+        app.put('/blogs', async (req, res) => {
             const updated = req.body;
     
             const filter = { _id: ObjectId(updated._id) };
     
             let updateDoc = {};
-            if(updated.isFavourited)
+            if(updated.isApproved)
             {
-             updated.isFavourited = false;
+             updated.isApproved = false;
              updateDoc = {
                  $set: {
-                     isFavourited: false
+                     isApproved: false
                  },
              };
             }
     
             else {
-                updated.isFavourited = true;
+                updated.isApproved = true;
                 updateDoc = {
                     $set: {
-                        isFavourited: true
+                        isApproved: true
                     },
                 };
                }
@@ -86,7 +91,7 @@ async function run() {
                if (result) {
                 res.json(updated);
                }
-          }); */
+          });
 
 
         // DELETE blogs from ManageBlogs
@@ -174,7 +179,7 @@ async function run() {
             res.send(userCompare);
         });
 
-        // GET all order by email
+        // GET allCompare by email
         app.get("/MyCompared/:email", (req, res) => {
             console.log(req.params);
             MyCompared

@@ -27,10 +27,21 @@ async function run() {
 
         // GET blogs
         app.get('/blogs', async (req, res) => {
-            // const query = { isFavourited: true };
             const cursor = blogCollection.find({});
-            const blogs = await cursor.toArray();
-            res.send(blogs);
+            const page = req.query.page;
+            const size = parseInt(req.query.size);
+            let blogs;
+            const count = await cursor.count();
+            if (page){
+                blogs = await cursor.skip(page*size).limit(size).toArray();
+            }
+            else{
+                 blogs = await cursor.toArray();
+            }
+           res.send({
+               count,
+               blogs
+            });
         });
 
         // Update myBlogs
